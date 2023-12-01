@@ -27,9 +27,8 @@
 
 <script>
   $(function() {
-
-    let collectionTabs = document.querySelectorAll('.collection-tab')
     let filters = ""
+    let collectionTabs = document.querySelectorAll('.collection-tab')
 
     collectionTabs.forEach(collectionTab => {
         collectionTab.addEventListener('click', loadCollection)
@@ -37,8 +36,11 @@
 
     function loadCollection(event) {
         event.preventDefault()
-        let currentUrl = window.location.href;
-        filters = currentUrl.includes('?') ? currentUrl.substring(currentUrl.indexOf('?')) : '';
+
+        // Slice the url to get the filter parameters
+        let currentUrl = window.location.href
+        filters = currentUrl.includes('?') ? currentUrl.substring(currentUrl.indexOf('?')) : ''
+
         document.querySelector('[data-base-url]').dataset.baseUrl = event.currentTarget.href
         ajaxUpdateCollectionGrid(event.currentTarget.href + filters)
     }
