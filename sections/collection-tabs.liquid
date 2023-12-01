@@ -14,6 +14,8 @@
   }
 {%- endstyle -%}
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <div class="page-width" data-base-url="">
   <div class="collection-navbar">
     {% for block in section.blocks %}
@@ -22,6 +24,89 @@
     {% endfor %}
   </div>
 </div>
+
+<script>
+  $(function() {
+
+    let collectionTabs = document.querySelectorAll('.collection-tab')
+
+    collectionTabs.forEach(collectionTab => {
+        collectionTab.addEventListener('click', loadCollection)
+    })
+
+    function loadCollection(event) {
+        event.preventDefault()
+        document.querySelector('[data-base-url]').dataset.baseUrl = event.currentTarget.href
+        ajaxUpdateCollectionGrid()
+    }
+
+    function createFilterUrl () {
+      const baseUrl = document.querySelector('[data-base-url]').getAttribute('data-base-url')
+      let ajaxUrl = baseUrl
+
+      // Sort
+      const selectedSort = document.querySelector('#SortBy [selected]')
+      if (selectedSort) {
+        let template = 'ajax'
+        ajaxUrl += `?view=${template}&sort_by=${selectedSort.value}&`
+      } else {
+          ajaxUrl += '?'
+      }
+
+      // Availability filter
+      const filterAvailability = document.querySelectorAll('[id*="Filter-filter.v.availability-"][checked]')
+      if (filterAvailability) {
+        for (let i = 0; i < filterAvailability.length; i++) {
+          ajaxUrl += `filter.v.availability=${filterAvailability[i].value}&`
+        }
+      }
+
+      // From-Price filter
+      const filterFromPrice = document.querySelector('#Filter-Price-GTE[value]')
+      if (filterFromPrice) {
+        ajaxUrl += `filter.v.price.gte=${filterFromPrice.value}&`
+      }
+
+      // To-Price filter
+      const filterToPrice = document.querySelector('#Filter-Price-LTE[value]')
+      if (filterToPrice) {
+        ajaxUrl += `filter.v.price.lte=${filterToPrice.value}&`
+      }
+
+      // remove last '?' or '&'
+      ajaxUrl = ajaxUrl.slice(0, -1)
+
+      return ajaxUrl
+    }
+
+    function ajaxUpdateCollectionGrid() {
+      const ajaxUrl = createFilterUrl()
+
+      $.ajax({
+        url: ajaxUrl,
+        method: 'GET',
+        success: function(response) {
+          // update page contents
+          const filteredPage = document.createElement('div')
+          filteredPage.innerHTML = response
+
+          const filteredProducts = filteredPage.querySelector('.collection')
+
+          // update page url
+          const filterUrl = ajaxUrl.replace('view=ajax&', '')
+          history.pushState(null, '', filterUrl)
+
+          const collectionLayout = document.querySelector('.collection')
+          collectionLayout.innerHTML = ''
+          collectionLayout.innerHTML = filteredProducts.innerHTML
+        },
+        error: function(err) {
+          console.error(err)
+        }
+      })
+    }
+  })
+</script>
 
 {% schema %}
 {
