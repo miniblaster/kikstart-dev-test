@@ -29,6 +29,7 @@
   $(function() {
 
     let collectionTabs = document.querySelectorAll('.collection-tab')
+    let filters = ""
 
     collectionTabs.forEach(collectionTab => {
         collectionTab.addEventListener('click', loadCollection)
@@ -36,52 +37,13 @@
 
     function loadCollection(event) {
         event.preventDefault()
+        let currentUrl = window.location.href;
+        filters = currentUrl.includes('?') ? currentUrl.substring(currentUrl.indexOf('?')) : '';
         document.querySelector('[data-base-url]').dataset.baseUrl = event.currentTarget.href
-        ajaxUpdateCollectionGrid()
+        ajaxUpdateCollectionGrid(event.currentTarget.href + filters)
     }
 
-    function createFilterUrl () {
-      const baseUrl = document.querySelector('[data-base-url]').getAttribute('data-base-url')
-      let ajaxUrl = baseUrl
-
-      // Sort
-      const selectedSort = document.querySelector('#SortBy [selected]')
-      if (selectedSort) {
-        let template = 'ajax'
-        ajaxUrl += `?view=${template}&sort_by=${selectedSort.value}&`
-      } else {
-          ajaxUrl += '?'
-      }
-
-      // Availability filter
-      const filterAvailability = document.querySelectorAll('[id*="Filter-filter.v.availability-"][checked]')
-      if (filterAvailability) {
-        for (let i = 0; i < filterAvailability.length; i++) {
-          ajaxUrl += `filter.v.availability=${filterAvailability[i].value}&`
-        }
-      }
-
-      // From-Price filter
-      const filterFromPrice = document.querySelector('#Filter-Price-GTE[value]')
-      if (filterFromPrice) {
-        ajaxUrl += `filter.v.price.gte=${filterFromPrice.value}&`
-      }
-
-      // To-Price filter
-      const filterToPrice = document.querySelector('#Filter-Price-LTE[value]')
-      if (filterToPrice) {
-        ajaxUrl += `filter.v.price.lte=${filterToPrice.value}&`
-      }
-
-      // remove last '?' or '&'
-      ajaxUrl = ajaxUrl.slice(0, -1)
-
-      return ajaxUrl
-    }
-
-    function ajaxUpdateCollectionGrid() {
-      const ajaxUrl = createFilterUrl()
-
+    function ajaxUpdateCollectionGrid(ajaxUrl) {
       $.ajax({
         url: ajaxUrl,
         method: 'GET',
