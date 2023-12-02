@@ -4,6 +4,13 @@
   border-bottom: 1px solid lightgrey;
 }
 
+.collection-dropdown {
+  display: none;
+  padding: 1rem 2rem;
+  border: none;
+  border-bottom: 1px solid lightgrey;
+}
+
 .collection-tab {
   color: grey;
   text-decoration: none;
@@ -11,6 +18,13 @@
   margin: 0rem 0rem;
 }
 
-@media screen and (min-width: 750px) {
-  
+@media screen and (max-width: 750px) {
+  .collection-navbar {
+    display: none;
+    border-bottom: none;
+  }
+
+  .collection-dropdown {
+    display: block;
+  }
 }

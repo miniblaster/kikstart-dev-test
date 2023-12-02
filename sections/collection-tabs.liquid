@@ -23,12 +23,37 @@
       <a class="collection-tab" href="/collections/{{ titleToUrl }}">{{ block.settings.collection.title }}</a>
     {% endfor %}
   </div>
+
+  <div class="collection-navbar-mobile">
+    <select class="collection-dropdown">
+      {% for block in section.blocks %}
+        {% assign titleToUrl = block.settings.collection.title | downcase | replace: ' ', '-' %}
+        <option value="/collections/{{ titleToUrl }}" {% if block.settings.collection.title == collection.title %}selected{% endif %}>
+          {{ block.settings.collection.title }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
 </div>
 
 <script>
   $(function() {
     let filters = ""
     let collectionTabs = document.querySelectorAll('.collection-tab')
+    let collectionDropdowns = document.querySelectorAll('.collection-dropdown')
+
+    collectionDropdowns.forEach(collectionDropdown => {
+      collectionDropdown.addEventListener('change', (event) => {
+        event.preventDefault()
+
+        // Slice the url to get the filter parameters
+        const currentUrl = window.location.href
+        filters = currentUrl.includes('?') ? currentUrl.substring(currentUrl.indexOf('?')) : ''
+
+        document.querySelector('[data-base-url]').dataset.baseUrl = event.target.value
+        ajaxUpdateCollectionGrid(event.target.value + filters)
+      })
+    })
 
     collectionTabs.forEach(collectionTab => {
         collectionTab.addEventListener('click', loadCollection)
@@ -38,7 +63,7 @@
         event.preventDefault()
 
         // Slice the url to get the filter parameters
-        let currentUrl = window.location.href
+        const currentUrl = window.location.href
         filters = currentUrl.includes('?') ? currentUrl.substring(currentUrl.indexOf('?')) : ''
 
         document.querySelector('[data-base-url]').dataset.baseUrl = event.currentTarget.href
@@ -55,14 +80,18 @@
           filteredPage.innerHTML = response
 
           const filteredProducts = filteredPage.querySelector('.collection')
+          const filteredCollectionTitle = filteredPage.querySelector('.collection-hero__title')
+          const filteredCollectionDropdown = filteredPage.querySelector('.collection-dropdown')
 
           // update page url
-          const filterUrl = ajaxUrl.replace('view=ajax&', '')
-          history.pushState(null, '', filterUrl)
+          history.pushState(null, '', ajaxUrl)
 
           const collectionLayout = document.querySelector('.collection')
-          collectionLayout.innerHTML = ''
+          const collectionTitle = document.querySelector('.collection-hero__title')
+          const collectionDropdown = document.querySelector('.collection-dropdown')
           collectionLayout.innerHTML = filteredProducts.innerHTML
+          collectionTitle.innerHTML = filteredCollectionTitle.innerHTML
+          collectionDropdown.innerHTML = filteredCollectionDropdown.innerHTML
         },
         error: function(err) {
           console.error(err)
