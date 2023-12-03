@@ -71,13 +71,18 @@
     }
 
     function ajaxUpdateCollectionGrid(ajaxUrl) {
-      $.ajax({
-        url: ajaxUrl,
-        method: 'GET',
-        success: function(response) {
+      fetch(ajaxUrl)
+        .then(response => {
+          if (response.ok) {
+            return response.text()
+          } else {
+            throw new Error('Network response was not ok.')
+          }
+        })
+        .then(responseText => {
           // update page contents
           const filteredPage = document.createElement('div')
-          filteredPage.innerHTML = response
+          filteredPage.innerHTML = responseText
 
           const filteredProducts = filteredPage.querySelector('.collection')
           const filteredCollectionTitle = filteredPage.querySelector('.collection-hero__title')
@@ -92,11 +97,10 @@
           collectionLayout.innerHTML = filteredProducts.innerHTML
           collectionTitle.innerHTML = filteredCollectionTitle.innerHTML
           collectionDropdown.innerHTML = filteredCollectionDropdown.innerHTML
-        },
-        error: function(err) {
-          console.error(err)
-        }
-      })
+        })
+        .catch(error => {
+          console.error(error)
+        })
     }
   })
 </script>
@@ -154,4 +158,3 @@
   ]
 }
 {% endschema %}
-
