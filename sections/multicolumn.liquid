@@ -146,24 +146,26 @@
       >
         {%- assign ingredients = product.metafields.custom.product_ingredient.value -%}
         {%- for ingredient in ingredients -%}
-          <li
-            id="Slide-{{ section.id }}-{{ forloop.index }}"
-            class="multicolumn-list__item grid__item{% if section.settings.swipe_on_mobile %} slider__slide{% endif %}{% if section.settings.column_alignment == 'center' %} center{% endif %}{{ empty_column }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-            {% if settings.animations_reveal_on_scroll %}
-              data-cascade
-              style="--animation-order: {{ forloop.index }};"
-            {% endif %}
-          >
-            <div class="multicolumn-card content-container">
-              <img class="ingredient-image" src="{{ingredient.image | img_url: 'master' }}" alt="Ingredient Image" />
-              <h3 class="ingredient-name" data-name="{{ingredient.name}}">
-                {{ ingredient.display_name }}
-              </h3>
-              {{ ingredient.brief_description | metafield_tag }}
-              <button class="ingredient-detail-btn" id="Learn-more-{{forloop.index}}">LEARN MORE</button>
-            </div>
-          </li>
-        {%- endfor -%}
+         {%- if ingredient.enable -%}
+            <li
+              id="Slide-{{ section.id }}-{{ forloop.index }}"
+              class="multicolumn-list__item grid__item{% if section.settings.swipe_on_mobile %} slider__slide{% endif %}{% if section.settings.column_alignment == 'center' %} center{% endif %}{{ empty_column }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+              {% if settings.animations_reveal_on_scroll %}
+                data-cascade
+                style="--animation-order: {{ forloop.index }};"
+              {% endif %}
+            >
+              <div class="multicolumn-card content-container">
+                <img class="ingredient-image" src="{{ingredient.image | img_url: 'master' }}" alt="Ingredient Image" />
+                <h3 class="ingredient-name" data-name="{{ingredient.name}}">
+                  {{ ingredient.display_name }}
+                </h3>
+                {{ ingredient.brief_description | metafield_tag }}
+                <button class="ingredient-detail-btn" id="Learn-more-{{forloop.index}}">LEARN MORE</button>
+              </div>
+            </li>
+          {%- endif -%}
+         {%- endfor -%}
       </ul>
 
       {%- if show_mobile_slider -%}
