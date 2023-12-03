@@ -76,7 +76,7 @@
         method: 'GET',
         success: function(response) {
           const filteredPage = document.createElement('div')
-          filteredPage.innerHTML = responseText
+          filteredPage.innerHTML = response
 
           const filteredProducts = filteredPage.querySelector('.collection')
           const filteredCollectionTitle = filteredPage.querySelector('.collection-hero__title')
