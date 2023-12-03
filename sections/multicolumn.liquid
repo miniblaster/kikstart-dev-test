@@ -11,9 +11,11 @@
     background: none;
   }
 
-  .ingredient-image {
+  .ingredient-image,
+  .modal-ingredient-image {
     width: 200px;
     height: 200px;
+    margin: auto;
     object-fit: cover;
     border-radius: 50%;
     box-shadow: 0px 0px 2px grey;
@@ -30,6 +32,66 @@
     margin-top: 1.5rem;
     border: none;
     border-bottom: 1px solid lightgrey;
+  }
+
+  /* The Modal */
+  .modal-ingredient {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+  }
+
+  .modal-content {
+    width: 80%;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    border: 1px solid #888;
+  }
+
+  .modal-ingredient-container {
+    padding: 5rem;
+  }
+
+  .modal-header {
+    display: flex;
+    gap: 3rem;
+  }
+  @media screen and (max-width: 750px) {
+    .modal-ingredient-container {
+      padding: 2rem;
+      text-align: center;
+    }
+    .modal-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  .modal-header h2 {
+    text-transform: uppercase;
+  }
+
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
   }
 
   .section-{{ section.id }}-padding {
@@ -80,7 +142,6 @@
       >
         {%- assign ingredients = product.metafields.custom.product_ingredient.value -%}
         {%- for ingredient in ingredients -%}
-          {%- assign main_description = ingredient.main_description | metafield_tag -%}
           <li
             id="Slide-{{ section.id }}-{{ forloop.index }}"
             class="multicolumn-list__item grid__item{% if section.settings.swipe_on_mobile %} slider__slide{% endif %}{% if section.settings.column_alignment == 'center' %} center{% endif %}{{ empty_column }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -98,14 +159,6 @@
               <button class="ingredient-detail-btn" id="Learn-more-{{forloop.index}}">LEARN MORE</button>
             </div>
           </li>
-
-          <!-- The Modal -->
-          <div id="Modal-ingredient-{{forloop.index}}" class="modal-ingredient" style="display: none;">
-            <div class="modal-content">
-              <span id="Modal-close-{{forloop.index}}" class="close">&times;</span>
-              <p>Some text in the Modal..</p>
-            </div>
-          </div>
         {%- endfor -%}
       </ul>
 
@@ -139,8 +192,45 @@
   </div>
 </div>
 
+{%- assign ingredients = product.metafields.custom.product_ingredient.value -%}
+{%- for ingredient in ingredients -%}
+  <div id="Modal-ingredient-{{forloop.index}}" class="modal-ingredient">
+    <div class="modal-content">
+      <span id="Modal-close-{{forloop.index}}" class="close">&times;</span>
+      <div class="modal-ingredient-container">
+        <div class="modal-header">
+          <img class="modal-ingredient-image" src="{{ingredient.image | img_url: 'master' }}" alt="Ingredient Image" />
+          <div>
+            <h2>{{ingredient.display_name}}</h3>
+            <span><strong>Latin Name:&nbsp;</strong>{{ingredient.name}}</span>
+            {{ingredient.other_info | metafield_tag}}
+          </div>
+        </div>
+        {{ingredient.main_description | metafield_tag}}
+      </div>
+    </div>
+  </div>
+{%- endfor -%}
+
 <script>
   window.onload = function() {
+    const learnMoreBtns = document.querySelectorAll('[id*="Learn-more-"]')
+
+    learnMoreBtns.forEach(learnMoreBtn => {
+      learnMoreBtn.addEventListener('click', (event) => {
+        const index = event.target.id.match(/\d+$/)[0];
+        const modal = document.getElementById(`Modal-ingredient-${index}`)
+        const close = document.getElementById(`Modal-close-${index}`);
+
+        modal.style.display = "block"
+        document.getElementsByTagName("body")[0].style.backgroundColor = "rgba(0, 0, 0, 0.4)"
+
+        close.onclick = function() {
+          modal.style.display = "none"
+          document.getElementsByTagName("body")[0].style.backgroundColor = "rgba(0, 0, 0, 0.4)"
+        }
+      })
+    })
   }
 </script>
 
