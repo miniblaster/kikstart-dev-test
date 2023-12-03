@@ -15,7 +15,6 @@
   .modal-ingredient-image {
     width: 200px;
     height: 200px;
-    margin: auto;
     object-fit: cover;
     border-radius: 50%;
     box-shadow: 0px 0px 2px grey;
@@ -66,16 +65,6 @@
     display: flex;
     gap: 3rem;
   }
-  @media screen and (max-width: 750px) {
-    .modal-ingredient-container {
-      padding: 2rem;
-      text-align: center;
-    }
-    .modal-header {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  }
 
   .modal-header h2 {
     text-transform: uppercase;
@@ -105,6 +94,21 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
+
+  @media screen and (max-width: 750px) {
+    .modal-ingredient-container {
+      padding: 2rem;
+      text-align: center;
+    }
+    .modal-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .modal-ingredient-image {
+      margin: auto;
+    }
+  }
+
 {%- endstyle -%}
 
 {%- liquid

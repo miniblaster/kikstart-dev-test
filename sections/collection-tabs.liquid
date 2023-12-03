@@ -71,16 +71,10 @@
     }
 
     function ajaxUpdateCollectionGrid(ajaxUrl) {
-      fetch(ajaxUrl)
-        .then(response => {
-          if (response.ok) {
-            return response.text()
-          } else {
-            throw new Error('Network response was not ok.')
-          }
-        })
-        .then(responseText => {
-          // update page contents
+      $.ajax({
+        url: ajaxUrl,
+        method: 'GET',
+        success: function(response) {
           const filteredPage = document.createElement('div')
           filteredPage.innerHTML = responseText
 
@@ -97,10 +91,11 @@
           collectionLayout.innerHTML = filteredProducts.innerHTML
           collectionTitle.innerHTML = filteredCollectionTitle.innerHTML
           collectionDropdown.innerHTML = filteredCollectionDropdown.innerHTML
-        })
-        .catch(error => {
-          console.error(error)
-        })
+        },
+        error: function(err) {
+          console.error(err)
+        }
+      })
     }
   })
 </script>
